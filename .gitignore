@@ -1,0 +1,28 @@
+# Credenciales y secretos
+.env
+.env.*
+!.env.example
+
+# Caché y datos locales
+.cache/
+*.sqlite3
+*.sqlite3-*
+config/alerts.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Capturas generadas localmente (las publicadas van en docs/screenshots)
+!docs/screenshots/*.png
