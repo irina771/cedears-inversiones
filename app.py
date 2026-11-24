@@ -15,12 +15,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from cedears.config import settings  # noqa: E402
-from cedears.universe import sectors_in  # noqa: E402
 from ui import components as ui  # noqa: E402
 from ui import data as data_layer  # noqa: E402
 from ui import theme  # noqa: E402
 from ui.views import (  # noqa: E402
-    alerts,
     argentina,
     arsusd,
     dips,
@@ -49,7 +47,6 @@ PAGES = {
     "Empresas argentinas": argentina.render,
     "ARS vs USD · CCL": arsusd.render,
     "Score y clasificación": scores.render,
-    "Alertas": alerts.render,
 }
 
 
@@ -66,39 +63,6 @@ def sidebar_brand() -> None:
         """,
         unsafe_allow_html=True,
     )
-
-
-def render_filters(frame) -> dict:
-    """Filtros globales del panel lateral."""
-    filters: dict = {}
-    with st.sidebar.expander("Filtros", expanded=False):
-        tickers = sorted(frame["symbol"].dropna().unique())
-        filters["tickers"] = st.multiselect("Ticker", tickers, placeholder="Todos")
-
-        companies = sorted(frame["company"].dropna().unique())
-        filters["companies"] = st.multiselect("Empresa", companies, placeholder="Todas")
-
-        sectors = sectors_in(frame)
-        filters["sectors"] = st.multiselect("Sector", sectors, placeholder="Todos")
-
-        filters["types"] = st.multiselect(
-            "Tipo de activo", sorted(frame["type"].dropna().unique()), placeholder="Todos"
-        )
-        filters["trends"] = st.multiselect(
-            "Tendencia", ["Positiva", "Lateral", "Negativa", "N/D"], placeholder="Todas"
-        )
-        filters["classifications"] = st.multiselect(
-            "Clasificación",
-            ["Verde · Oportunidad potencial", "Amarillo · Neutral", "Rojo · Riesgo"],
-            placeholder="Todas",
-        )
-        var_range = st.slider("Variación diaria (%)", -30.0, 30.0, (-30.0, 30.0), 0.5)
-        filters["var_range"] = var_range
-        filters["min_volume"] = st.number_input(
-            "Volumen mínimo (millones de ARS)", min_value=0.0, value=0.0, step=1.0
-        ) * 1_000_000
-
-    return filters
 
 
 def setup_screen() -> None:
@@ -184,8 +148,7 @@ def main() -> None:
     for message in analysis.warnings:
         ui.banner(message, "danger" if analysis.stale else "info")
 
-    filters = render_filters(analysis.frame)
-    frame = data_layer.apply_filters(analysis.frame, filters)
+    frame = analysis.frame
 
     st.sidebar.markdown(
         '<div class="small" style="margin-top:0.9rem">Herramienta de análisis. No constituye '

@@ -60,7 +60,17 @@ section[data-testid="stSidebar"] label[data-testid="stRadioOption"] > div > div:
 .stAppViewContainer { flex-direction: row-reverse; }
 /* Sin borde cuando está colapsada (evita la línea de 1px) */
 section[data-testid="stSidebar"][data-collapsed="true"] { border: none; overflow: hidden; }
-section[data-testid="stSidebar"]:not([data-collapsed="true"]) { border-right: none; border-left: 1px solid var(--border); }
+section[data-testid="stSidebar"]:not([data-collapsed="true"]) {
+  border-right: none;
+  border-left: 1px solid var(--border);
+  width: 264px !important;
+  min-width: 264px !important;
+}
+
+/* NavBar: sin animación de apertura/cierre */
+section[data-testid="stSidebar"],
+section[data-testid="stSidebar"] > div,
+section[data-testid="stSidebar"] * { transition: none !important; }
 
 /* Icono de hamburguesa: oculta el icono de flecha de Streamlit */
 button[data-testid="stExpandSidebarButton"],
@@ -75,6 +85,7 @@ section[data-testid="stSidebar"] button[kind="headerNoPadding"] {
 }
 button[data-testid="stExpandSidebarButton"] > span,
 section[data-testid="stSidebar"] button[kind="headerNoPadding"] > span { display: none; }
+section[data-testid="stSidebar"] button[kind="headerNoPadding"] { visibility: visible !important; opacity: 1 !important; }
 button[data-testid="stExpandSidebarButton"]::before,
 section[data-testid="stSidebar"] button[kind="headerNoPadding"]::before {
   content: "☰";
