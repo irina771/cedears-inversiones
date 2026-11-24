@@ -24,12 +24,10 @@ from ui.views import (  # noqa: E402
     argentina,
     arsusd,
     dips,
-    dividends,
     history,
     momentum,
     overview,
     scores,
-    settings_view,
     simulator,
 )
 
@@ -37,23 +35,21 @@ st.set_page_config(
     page_title="Cedears Inversiones",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 theme.inject_theme()
 
 PAGES = {
     "Resumen del mercado": overview.render,
+    "Simulador de inversión": simulator.render,
+    "Histórico y evolución": history.render,
     "CEDEARs en baja · rebotes": dips.render,
     "Momentum · top ganancias": momentum.render,
     "Empresas argentinas": argentina.render,
     "ARS vs USD · CCL": arsusd.render,
     "Score y clasificación": scores.render,
     "Alertas": alerts.render,
-    "Histórico y evolución": history.render,
-    "Simulador de inversión": simulator.render,
-    "Dividendos": dividends.render,
-    "Configuración y datos": settings_view.render,
 }
 
 
@@ -165,12 +161,6 @@ def main() -> None:
 
     page = st.sidebar.radio("Navegación", list(PAGES), label_visibility="collapsed")
 
-    if settings.sandbox:
-        st.sidebar.markdown(
-            '<div class="pill pill-red" style="margin:0.4rem 0">SANDBOX · datos sintéticos</div>',
-            unsafe_allow_html=True,
-        )
-
     if st.sidebar.button("Actualizar datos", use_container_width=True):
         data_layer.invalidate()
         st.cache_resource.clear()
@@ -186,7 +176,7 @@ def main() -> None:
         ui.page_header(page, "Sin datos disponibles", "desconectado")
         ui.banner(
             "No hay cotizaciones para mostrar. Revisá la configuración de credenciales y la conexión "
-            "con api.iolinversiones.com (sección <b>Configuración y datos</b>).",
+            "con api.iolinversiones.com.",
             "danger",
         )
         return
@@ -197,16 +187,6 @@ def main() -> None:
     filters = render_filters(analysis.frame)
     frame = data_layer.apply_filters(analysis.frame, filters)
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(
-        f'<div class="small">Última actualización<br><b>{analysis.fetched_at.astimezone().strftime("%d/%m/%Y %H:%M:%S")}</b></div>',
-        unsafe_allow_html=True,
-    )
-    st.sidebar.markdown(
-        f'<div class="small" style="margin-top:0.5rem">{len(frame)} de {len(analysis.frame)} instrumentos<br>'
-        f'Fuente: {analysis.source}</div>',
-        unsafe_allow_html=True,
-    )
     st.sidebar.markdown(
         '<div class="small" style="margin-top:0.9rem">Herramienta de análisis. No constituye '
         "recomendación de inversión.</div>",

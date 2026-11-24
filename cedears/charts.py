@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -13,13 +15,13 @@ AMBER = "#F5B301"
 CYAN = "#22D3EE"
 VIOLET = "#8B5CF6"
 MUTED = "#8A9BB4"
-TEXT = "#E6EDF7"
-GRID = "rgba(148,163,184,0.12)"
+TEXT = "#FAFAFA"
+GRID = "rgba(255,255,255,0.10)"
 PANEL = "rgba(0,0,0,0)"
 
 PALETTE = [CYAN, GREEN, AMBER, VIOLET, "#F97316", "#38BDF8", "#F472B6", "#A3E635", "#94A3B8", "#FB7185"]
 
-FONT = "Inter, 'Segoe UI', system-ui, sans-serif"
+FONT = "'Wix Madefor Text', system-ui, sans-serif"
 
 
 def _layout(fig: go.Figure, height: int = 360, legend: bool = False, margin_top: int = 20) -> go.Figure:
@@ -29,7 +31,7 @@ def _layout(fig: go.Figure, height: int = 360, legend: bool = False, margin_top:
         plot_bgcolor=PANEL,
         font=dict(family=FONT, color=TEXT, size=12),
         margin=dict(l=10, r=16, t=margin_top, b=10),
-        hoverlabel=dict(bgcolor="#0E1626", bordercolor="#22304A", font=dict(color=TEXT, family=FONT)),
+        hoverlabel=dict(bgcolor="#111117", bordercolor="#2A2828", font=dict(color=TEXT, family=FONT)),
         showlegend=legend,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, bgcolor="rgba(0,0,0,0)"),
         dragmode="pan",
@@ -108,46 +110,52 @@ def breadth_donut(up: int, down: int, flat: int = 0) -> go.Figure:
     return _layout(fig, height=260, margin_top=10)
 
 
-def market_treemap(frame: pd.DataFrame) -> go.Figure:
-    """Mapa de calor jerárquico: sector -> ticker, color = variación diaria."""
+def market_heatmap(frame: pd.DataFrame, max_cells: int = 40) -> str:
+    """Mapa de calor del mercado: una celda por instrumento. Color por variación
+    diaria (rojo/verde proporcional) y tamaño por monto operado.
+
+    Implementado con HTML/CSS (grid) para que no dependa del renderizado de
+    treemaps por plotly.js, que no dibuja en todos los entornos.
+    """
     if frame is None or frame.empty:
-        return empty_figure("Sin datos")
+        return "<div class='heat-empty'>Sin datos para el heatmap</div>"
+
     data = frame.dropna(subset=["variacion_diaria"]).copy()
     if data.empty:
-        return empty_figure("Sin datos")
+        return "<div class='heat-empty'>Sin datos para el heatmap</div>"
 
-    data["monto_ars"] = data["monto_ars"].fillna(data["monto_ars"].median())
-    data["label"] = data.apply(
-        lambda r: f"{r['symbol']}<br><span style='font-size:10px'>{r['variacion_diaria']:+.2f}%</span>", axis=1
-    )
+    data["monto_ars"] = pd.to_numeric(data["monto_ars"], errors="coerce")
+    data = data[data["monto_ars"].notna()].copy()
+    if data.empty:
+        data["monto_ars"] = data["volume"] * data["last"]
+    if data.empty:
+        return "<div class='heat-empty'>Sin datos para el heatmap</div>"
+
+    data = data.sort_values("monto_ars", ascending=False).head(max_cells)
     limit = float(np.nanmax(np.abs(data["variacion_diaria"]))) or 1.0
 
-    fig = go.Figure(
-        go.Treemap(
-            labels=data["label"],
-            parents=data["sector"].fillna("Otros"),
-            values=data["monto_ars"].clip(lower=1),
-            customdata=np.stack([data["company"], data["variacion_diaria"], data["var_7d"], data["var_30d"]], axis=-1),
-            texttemplate="%{label}",
-            hovertemplate=(
-                "<b>%{label}</b><br>%{customdata[0]}<br>Día: %{customdata[1]:+.2f}%"
-                "<br>7d: %{customdata[2]:+.2f}%<br>30d: %{customdata[3]:+.2f}%<extra></extra>"
-            ),
-            marker=dict(
-                colors=data["variacion_diaria"],
-                colorscale=[[0, RED], [0.5, "#1B2A41"], [1, GREEN]],
-                cmin=-limit,
-                cmax=limit,
-                line=dict(color="#0B1220", width=1),
-                colorbar=dict(title="Var. día", ticksuffix="%", thickness=10, len=0.7, tickfont=dict(color=MUTED)),
-            ),
-            textfont=dict(size=12, color="#F8FAFC"),
-            tiling=dict(pad=2),
-            branchvalues="total",
+    logs = np.log10(np.maximum(data["monto_ars"].fillna(1.0).astype(float), 1.0))
+    span = float(logs.max() - logs.min()) if len(logs) else 0.0
+    fracs = ((logs - logs.min()) / span).clip(0, 1).tolist() if span > 0 else [1.0] * len(data)
+
+    cells = []
+    for r, frac in zip(data.itertuples(), fracs):
+        v = float(r.variacion_diaria)
+        t = min(1.0, abs(v) / limit)
+        if v > 0:
+            bg = f"rgba(22,199,132,{round(0.25 + 0.55 * t, 2)})"
+        elif v < 0:
+            bg = f"rgba(234,57,67,{round(0.25 + 0.55 * t, 2)})"
+        else:
+            bg = "rgba(255,255,255,0.035)"
+        height = round(30 + 22 * float(frac))
+        chg = f"{v:+.2f}%".replace(".", ",")
+        cells.append(
+            f'<div class="heat-cell" style="background:{bg};min-height:{height}px">'
+            f'<span class="heat-sym">{html.escape(str(r.symbol))}</span>'
+            f'<span class="heat-chg">{chg}</span></div>'
         )
-    )
-    fig.update_layout(margin=dict(l=0, r=0, t=10, b=0))
-    return _layout(fig, height=440, margin_top=10)
+    return '<div class="heat-grid">' + "".join(cells) + "</div>"
 
 
 def heatmap_metrics(frame: pd.DataFrame, top_n: int = 30) -> go.Figure:

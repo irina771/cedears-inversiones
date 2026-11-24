@@ -206,7 +206,7 @@ def empty_state(message: str, hint: str = "") -> None:
     st.markdown(
         compact(
             f"""
-        <div style="text-align:center;padding:2.4rem 1rem;border:1px dashed {theme.BORDER};border-radius:16px;background:rgba(14,22,38,0.5)">
+        <div style="text-align:center;padding:2.4rem 1rem;border:1px dashed {theme.BORDER};border-radius:8px;background:rgba(255,255,255,0.03)">
           <div style="font-size:1rem;font-weight:600;margin-bottom:0.35rem">{message}</div>
           <div class="small">{hint}</div>
         </div>

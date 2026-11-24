@@ -87,49 +87,26 @@ def render(analysis: Analysis, frame: pd.DataFrame) -> None:
         st.plotly_chart(charts.distribution_histogram(frame), width="stretch", config={"displayModeBar": False})
 
     ui.section("Heatmap del mercado", "Tamaño por monto operado · color por variación diaria · filtrá por sector en la barra lateral")
-    st.plotly_chart(charts.market_treemap(frame), width="stretch", config={"displayModeBar": False})
+    st.markdown(charts.market_heatmap(frame), unsafe_allow_html=True)
 
     # ------------------------------------------------------------- rankings
-    ui.section("Rankings del día", "Se actualizan con cada refresco de datos")
-    col1, col2, col3 = st.columns(3)
+    ui.section("Rankings del día", "Top ganancias y top caídas · primeros 5 puestos")
+    col1, col2 = st.columns(2)
 
     with col1:
         st.markdown(f'<div class="section-sub">Top ganancias</div>', unsafe_allow_html=True)
-        top_up = frame.nlargest(8, "variacion_diaria")[["symbol", "company", "variacion_diaria", "volumen_relativo"]]
-        top_up.columns = ["Ticker", "Empresa", "Var. día", "Vol. rel."]
-        ui.styled_table(top_up, pct_columns=["Var. día"], height=300)
+        top_up = frame.nlargest(5, "variacion_diaria")[["symbol", "company", "variacion_diaria", "volumen_relativo"]].copy()
+        top_up.insert(0, "Pos", range(1, len(top_up) + 1))
+        top_up.columns = ["Pos", "Ticker", "Empresa", "Var. día", "Vol. rel."]
+        ui.styled_table(top_up, pct_columns=["Var. día"], height=280)
 
     with col2:
         st.markdown(f'<div class="section-sub">Top caídas</div>', unsafe_allow_html=True)
-        top_down = frame.nsmallest(8, "variacion_diaria")[["symbol", "company", "variacion_diaria", "volumen_relativo"]]
-        top_down.columns = ["Ticker", "Empresa", "Var. día", "Vol. rel."]
-        ui.styled_table(top_down, pct_columns=["Var. día"], height=300)
+        top_down = frame.nsmallest(5, "variacion_diaria")[["symbol", "company", "variacion_diaria", "volumen_relativo"]].copy()
+        top_down.insert(0, "Pos", range(1, len(top_down) + 1))
+        top_down.columns = ["Pos", "Ticker", "Empresa", "Var. día", "Vol. rel."]
+        ui.styled_table(top_down, pct_columns=["Var. día"], height=280)
 
-    with col3:
-        st.markdown(f'<div class="section-sub">Mejor score</div>', unsafe_allow_html=True)
-        top_score = frame.dropna(subset=["score"]).nlargest(8, "score")[["symbol", "company", "score", "tendencia"]]
-        top_score.columns = ["Ticker", "Empresa", "Score", "Tendencia"]
-        ui.styled_table(top_score, height=300, decimals=1)
-
-    # -------------------------------------------------------------- tabla
-    ui.section("Tabla completa", "Ordená haciendo clic en los encabezados · buscá con el ícono de búsqueda")
-    table = frame[
-        [
-            "symbol", "company", "type", "sector", "last", "variacion_diaria",
-            "var_7d", "var_30d", "volumen_relativo", "volatilidad_pct",
-            "descuento_52w", "tendencia", "clasificacion",
-        ]
-    ].copy()
-    table.columns = [
-        "Ticker", "Empresa", "Tipo", "Sector", "Precio", "Var. día",
-        "7 días", "30 días", "Vol. rel.", "Volatilidad", "Desc. 52s", "Tendencia", "Clasificación",
-    ]
-    ui.styled_table(
-        table.sort_values("Var. día", ascending=False),
-        pct_columns=["Var. día", "7 días", "30 días", "Volatilidad", "Desc. 52s"],
-        height=460,
-        decimals=2,
-    )
     ui.disclaimer(
         "Los precios provienen de la API de IOL (plazo T0) y pueden tener demora respecto del mercado en vivo. "
         "El volumen relativo se calcula contra el promedio de 20 ruedas. N/D = dato no disponible."
