@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 BG = "#09090B"
 BG_SOFT = "#0D0D10"
@@ -288,5 +289,27 @@ hr { border-color: var(--border); }
 
 def inject_theme() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
-    # Evita que el traductor automático del navegador altere tickers y títulos.
-    st.markdown('<meta name="google" content="notranslate">', unsafe_allow_html=True)
+    # Desactiva el traductor automático del navegador en toda la app: al reescribir
+    # los textos en nodos <font> rompe la reconciliación de React (NotFoundError:
+    # removeChild) en cada rerun.
+    components.html(
+        """
+        <script>
+        (function () {
+          try {
+            var doc = window.parent.document;
+            doc.documentElement.setAttribute('translate', 'no');
+            doc.documentElement.classList.add('notranslate');
+            if (!doc.head.querySelector('meta[name="google"][content="notranslate"]')) {
+              var meta = doc.createElement('meta');
+              meta.setAttribute('name', 'google');
+              meta.setAttribute('content', 'notranslate');
+              doc.head.appendChild(meta);
+            }
+          } catch (e) {}
+        })();
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
