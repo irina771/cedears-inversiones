@@ -151,7 +151,7 @@ def market_heatmap(frame: pd.DataFrame, max_cells: int = 40) -> str:
         height = round(30 + 22 * float(frac))
         chg = f"{v:+.2f}%".replace(".", ",")
         cells.append(
-            f'<div class="heat-cell" style="background:{bg};min-height:{height}px">'
+            f'<div class="heat-cell notranslate" style="background:{bg};min-height:{height}px">'
             f'<span class="heat-sym">{html.escape(str(r.symbol))}</span>'
             f'<span class="heat-chg">{chg}</span></div>'
         )

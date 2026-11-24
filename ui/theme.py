@@ -178,6 +178,40 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child 
 .neg { color: var(--red) !important; }
 .neu { color: var(--muted) !important; }
 
+/* Tarjeta CCL */
+.ccl-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.2rem; flex-wrap: wrap;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.15rem;
+}
+.ccl-info { min-width: 170px; }
+.ccl-value { font-family: 'Azeret Mono', ui-monospace, monospace; font-size: 1.7rem; font-weight: 600; margin-top: 0.15rem; line-height: 1.1; }
+.ccl-change { font-family: 'Azeret Mono', monospace; font-size: 0.9rem; font-weight: 600; margin-top: 0.12rem; }
+.ccl-caption { font-size: 0.68rem; color: var(--muted); margin-top: 0.1rem; }
+.ccl-spark { flex: 1 1 260px; max-width: 680px; min-width: 160px; }
+.ccl-spark svg { width: 100%; height: 64px; display: block; }
+
+/* Rankings como cards */
+.rank-list { display: flex; flex-direction: column; gap: 0.35rem; }
+.rank-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid var(--border);
+  border-left: 2px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  padding: 0.42rem 0.75rem;
+}
+.rank-pos { width: 16px; font-family: 'Azeret Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+.rank-main { flex: 1; min-width: 0; }
+.rank-ticker { font-size: 0.84rem; font-weight: 700; line-height: 1.15; }
+.rank-company { font-size: 0.68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-var { font-family: 'Azeret Mono', monospace; font-size: 0.84rem; font-weight: 600; }
+.rank-empty { font-size: 0.8rem; color: var(--muted); padding: 0.6rem 0; }
+
 /* Encabezados de sección */
 .section-head { display: flex; align-items: baseline; gap: 0.7rem; margin: 1.35rem 0 0.55rem 0; }
 .section-title { font-size: 1.06rem; font-weight: 650; letter-spacing: -0.01em; }
@@ -250,3 +284,5 @@ hr { border-color: var(--border); }
 
 def inject_theme() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+    # Evita que el traductor automático del navegador altere tickers y títulos.
+    st.markdown('<meta name="google" content="notranslate">', unsafe_allow_html=True)
