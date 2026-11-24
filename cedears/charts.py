@@ -148,7 +148,7 @@ def market_heatmap(frame: pd.DataFrame, max_cells: int = 40) -> str:
             bg = f"rgba(234,57,67,{round(0.25 + 0.55 * t, 2)})"
         else:
             bg = "rgba(255,255,255,0.035)"
-        height = round(30 + 22 * float(frac))
+        height = round(40 + 26 * float(frac))
         chg = f"{v:+.2f}%".replace(".", ",")
         cells.append(
             f'<div class="heat-cell notranslate" style="background:{bg};min-height:{height}px">'

@@ -90,7 +90,7 @@ def section(title: str, subtitle: str = "") -> None:
     st.markdown(
         compact(
             f"""
-        <div class="section-head">
+        <div class="section-head notranslate">
           <div class="accent-bar"></div>
           <div class="section-title">{title}</div>
           {sub}
@@ -183,11 +183,11 @@ def ccl_card(quote, history: pd.DataFrame, days: int = 30) -> None:
 
 
 def rank_list(frame: pd.DataFrame, value_col: str = "variacion_diaria") -> str:
-    """Ranking como cards (posición, ticker, empresa y variación)."""
+    """Ranking como cards (ticker, empresa y variación), sin numeración."""
     if frame is None or frame.empty:
         return '<div class="rank-empty">Sin datos</div>'
     cards = []
-    for pos, (_, row) in enumerate(frame.iterrows(), start=1):
+    for _, row in frame.iterrows():
         value = row.get(value_col)
         tone = "pos" if value > 0 else "neg" if value < 0 else "neu"
         company = row.get("company")
@@ -195,18 +195,15 @@ def rank_list(frame: pd.DataFrame, value_col: str = "variacion_diaria") -> str:
         cards.append(
             compact(
                 f"""
-        <div class="rank-item">
-          <div class="rank-pos">{pos}</div>
-          <div class="rank-main">
-            <div class="rank-ticker">{html.escape(str(row.get('symbol', '')))}</div>
-            <div class="rank-company">{html.escape(company)}</div>
-          </div>
+        <div class="rank-tile">
+          <div class="rank-ticker">{html.escape(str(row.get('symbol', '')))}</div>
+          <div class="rank-company">{html.escape(company)}</div>
           <div class="rank-var {tone}">{fmt_pct(value)}</div>
         </div>
         """
             )
         )
-    return '<div class="rank-list notranslate">' + "".join(cards) + "</div>"
+    return '<div class="rank-grid notranslate">' + "".join(cards) + "</div>"
 
 
 def banner(text: str, kind: str = "info") -> None:

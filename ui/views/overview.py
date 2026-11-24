@@ -37,24 +37,16 @@ def render(analysis: Analysis, frame: pd.DataFrame) -> None:
             ui.kpi("Bajando", f"{bajan}", f"{ui.fmt_pct(pct_bajan, 1, signed=False)} · CEDEARs en rojo", accent="#EA3943"),
             ui.kpi("Top ganador", ui.fmt_pct(summary.get("mejor_var")),
                    f'{summary.get("mejor_ticker", "")} · {summary.get("mejor_empresa", "")}', accent="#16C784"),
-            ui.kpi("Volumen total", ui.fmt_money(summary.get("volumen_total")),
+            ui.kpi("Volumen total", ui.fmt_money(summary.get("volumen_total"), symbol=""),
                    "Monto operado en ARS", accent="#22D3EE"),
         ],
         columns=2,
     )
 
     # ------------------------------------------------------------- rankings
-    ui.section("Rankings del día", "Top ganancias y top caídas · primeros 5 puestos")
+    ui.section("Ranking diario", "Las 8 mayores subas del día")
     ranked = frame.dropna(subset=["variacion_diaria"])
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown('<div class="section-sub">Top ganancias</div>', unsafe_allow_html=True)
-        st.markdown(ui.rank_list(ranked.nlargest(5, "variacion_diaria")), unsafe_allow_html=True)
-
-    with col2:
-        st.markdown('<div class="section-sub">Top caídas</div>', unsafe_allow_html=True)
-        st.markdown(ui.rank_list(ranked.nsmallest(5, "variacion_diaria")), unsafe_allow_html=True)
+    st.markdown(ui.rank_list(ranked.nlargest(8, "variacion_diaria")), unsafe_allow_html=True)
 
     # ---------------------------------------------------------- indicadores
     ui.section("Indicadores de mercado", "Distribución de subidas y bajadas del universo")

@@ -102,17 +102,18 @@ button[data-testid="stExpandSidebarButton"] {
 }
 
 /* Heatmap del mercado (celdas HTML) */
-.heat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 3px; align-items: stretch; }
+.heat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 6px; align-items: stretch; }
 .heat-cell {
   display: flex; flex-direction: column; justify-content: center; gap: 1px;
-  border-radius: 3px; padding: 3px 5px;
+  border-radius: 3px; padding: 5px 7px;
   background: rgba(255,255,255,0.035);
-  color: #F8FAFC; font-size: 10px; font-weight: 600; line-height: 1.2;
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #F8FAFC; font-size: 11px; font-weight: 600; line-height: 1.25;
   transition: background 0.12s ease;
 }
-.heat-cell:hover { background: rgba(255,255,255,0.06); }
-.heat-cell .heat-sym { font-size: 10px; font-weight: 700; }
-.heat-cell .heat-chg { font-size: 9px; opacity: 0.92; }
+.heat-cell:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
+.heat-cell .heat-sym { font-size: 11px; font-weight: 700; }
+.heat-cell .heat-chg { font-size: 10px; opacity: 0.92; }
 .heat-empty { color: var(--muted); font-size: 0.85rem; padding: 1.2rem; text-align: center; }
 
 h1, h2, h3, h4 {
@@ -145,12 +146,16 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label p { font-size: 0.8
 section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child { display: none; }
 
 /* Tarjetas KPI */
-.kpi-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+.kpi-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
 .kpi {
   background: rgba(255,255,255,0.035);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.8rem 0.9rem;
+  padding: 1.05rem 1.1rem;
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   overflow: hidden;
   transition: transform 0.12s ease, border-color 0.12s ease;
@@ -167,10 +172,10 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child 
 }
 .kpi-value {
   font-family: 'Azeret Mono', ui-monospace, monospace;
-  font-size: 1.35rem;
+  font-size: 1.85rem;
   font-weight: 600;
-  margin-top: 0.2rem;
-  line-height: 1.15;
+  margin-top: 0.25rem;
+  line-height: 1.1;
 }
 .kpi-hint { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.25; }
 .kpi-delta { font-size: 0.72rem; font-weight: 600; margin-top: 0.12rem; font-family: 'Azeret Mono', monospace; }
@@ -181,35 +186,34 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child 
 /* Tarjeta CCL */
 .ccl-card {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 1.2rem; flex-wrap: wrap;
+  gap: 0.9rem; flex-wrap: wrap;
   background: rgba(255,255,255,0.035);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.85rem 1rem;
+  padding: 0.55rem 0.8rem;
   margin-bottom: 0.15rem;
 }
-.ccl-info { min-width: 170px; }
-.ccl-value { font-family: 'Azeret Mono', ui-monospace, monospace; font-size: 1.7rem; font-weight: 600; margin-top: 0.15rem; line-height: 1.1; }
-.ccl-change { font-family: 'Azeret Mono', monospace; font-size: 0.9rem; font-weight: 600; margin-top: 0.12rem; }
-.ccl-caption { font-size: 0.68rem; color: var(--muted); margin-top: 0.1rem; }
-.ccl-spark { flex: 1 1 260px; max-width: 680px; min-width: 160px; }
-.ccl-spark svg { width: 100%; height: 64px; display: block; }
+.ccl-info { min-width: 140px; }
+.ccl-value { font-family: 'Azeret Mono', ui-monospace, monospace; font-size: 1.25rem; font-weight: 600; margin-top: 0.1rem; line-height: 1.1; }
+.ccl-change { font-family: 'Azeret Mono', monospace; font-size: 0.78rem; font-weight: 600; margin-top: 0.08rem; }
+.ccl-caption { font-size: 0.65rem; color: var(--muted); margin-top: 0.06rem; }
+.ccl-spark { flex: 1 1 240px; max-width: 640px; min-width: 140px; }
+.ccl-spark svg { width: 100%; height: 44px; display: block; }
 
 /* Rankings como cards */
-.rank-list { display: flex; flex-direction: column; gap: 0.35rem; }
-.rank-item {
-  display: flex; align-items: center; gap: 0.75rem;
-  background: rgba(255,255,255,0.035);
+.rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.55rem; }
+.rank-tile {
+  display: flex; flex-direction: column; gap: 0.12rem;
+  background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
-  border-left: 2px solid rgba(255,255,255,0.14);
+  border-top: 2px solid rgba(22,199,132,0.7);
   border-radius: 6px;
-  padding: 0.42rem 0.75rem;
+  padding: 0.65rem 0.75rem;
+  min-height: 92px;
 }
-.rank-pos { width: 16px; font-family: 'Azeret Mono', monospace; font-size: 0.72rem; color: var(--muted); }
-.rank-main { flex: 1; min-width: 0; }
-.rank-ticker { font-size: 0.84rem; font-weight: 700; line-height: 1.15; }
+.rank-ticker { font-size: 1.02rem; font-weight: 700; line-height: 1.15; }
 .rank-company { font-size: 0.68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rank-var { font-family: 'Azeret Mono', monospace; font-size: 0.84rem; font-weight: 600; }
+.rank-var { font-family: 'Azeret Mono', monospace; font-size: 0.98rem; font-weight: 600; margin-top: auto; padding-top: 0.25rem; }
 .rank-empty { font-size: 0.8rem; color: var(--muted); padding: 0.6rem 0; }
 
 /* Encabezados de sección */
@@ -245,7 +249,7 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child 
 
 /* Cabecera del dashboard */
 .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
-.page-title { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.03em; margin: 0; }
+.page-title { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.03em; margin: 0; }
 .page-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
 .status-chip { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.7rem; border-radius: 6px; background: rgba(22,199,132,0.08); border: 1px solid rgba(22,199,132,0.35); font-size: 0.74rem; color: #A7F3D0; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: #16C784; box-shadow: 0 0 0 4px rgba(22,199,132,0.12); }
